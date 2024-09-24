@@ -13,8 +13,8 @@ int main()
     //gasDetector.mode(PullDown);
     //overTempDetector.mode(PullDown);
 
-    PortIn detectors(PortD,0x0C); //mask = 0b1100
-    detectors.mode(PullDown);
+    PortIn detectors(PortD,0x0C); //mask = 0b1100, se activan los pines 2 y 3 del puerto D
+    detectors.mode(PullDown); //Se configuran los puertos con una resistencia de PullDown
 
     //-----Código equivalente utilizando la clase BusIn-----//
     //DigitalIn aButton(D4);
@@ -27,9 +27,10 @@ int main()
     //cButton.mode(PullDown);
     //dButton.mode(PullDown);
 
-    BusIn buttons(D4,D5,D6,D7);
+    //Con el uso de BusIn se configuran varios pines como DigitalIn para leerlos a la vez con una máscara
+    BusIn buttons(D4,D5,D6,D7); //Se configuran D4,D5,D6 y D7 como DigitalIn con el objeto BusIn
 
-    buttons.mode(PullDown);
+    buttons.mode(PullDown); //Resistencia de pull-down para las entradas configuradas.
 
 
     DigitalOut alarmLed(LED1);
@@ -48,13 +49,14 @@ int main()
         }
 
         alarmLed = alarmState;
-        printf("aButton: %s\n",(buttons.mask()& 0b00010000) ? "ACTIVADO" : "DESACTIVADO");
-        printf("bButton: %s\n",(buttons.mask()& 0b00100000) ? "ACTIVADO" : "DESACTIVADO");
-        printf("cButton: %s\n",(buttons.mask()& 0b01000000) ? "ACTIVADO" : "DESACTIVADO");
-        printf("dButton: %s\n",(buttons.mask()& 0b10000000) ? "ACTIVADO" : "DESACTIVADO");
+        //Las máscaras utilizadas se aplican sabiendo que BusIn(a,b,c,d,e,f,g,h) se leen en el byte como hgfedcba
+        printf("aButton: %s\n",(buttons.mask()& 0b0001) ? "ACTIVADO" : "DESACTIVADO");
+        printf("bButton: %s\n",(buttons.mask()& 0b0010) ? "ACTIVADO" : "DESACTIVADO");
+        printf("cButton: %s\n",(buttons.mask()& 0b0100) ? "ACTIVADO" : "DESACTIVADO");
+        printf("dButton: %s\n",(buttons.mask()& 0b1000) ? "ACTIVADO" : "DESACTIVADO");
         
         //aButton && bButton && !cButton && !dButton
-        if (( buttons & buttons.mask() )== 0b00110000 ) {
+        if (( buttons & buttons.mask() )== 0b0011 ) {
             alarmState = OFF;
             
             printf("%s\n","La alarma está desactivada");
